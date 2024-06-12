@@ -7,40 +7,19 @@ import (
 	"time"
 )
 
-var arena [20][10]byte
-var b = [3][4]byte{
-	{0, 1, 0, 0},
-	{0, 1, 0, 0},
-	{0, 1, 1, 0},
-}
-
-func draw() {
-	fmt.Print("\033[10;10H")
-	arena[3][5] = 1
-	for y, row := range arena {
-		var displayRow [10]byte
-
-		for x, cell := range row {
-			if cell == 0 {
-				displayRow[x] = ' '
-			} else {
-				displayRow[x] = 'X'
-			}
-		}
-
-		fmt.Println(string(displayRow[:]))
-		fmt.Print("\033[1B")
-		fmt.Printf("\033[%d;10H", 11+y)
-		time.Sleep(1 * time.Second)
-	}
-}
-
 var KeyEscape byte = 0
 var KeySpace byte = 1
 var KeyUp byte = 11
 var KeyDown byte = 12
 var KeyLeft byte = 13
 var KeyRight byte = 14
+
+var arena [20][10]byte
+var b = [3][4]byte{
+	{0, 1, 0, 0},
+	{0, 1, 0, 0},
+	{0, 1, 1, 0},
+}
 
 func readKey() {
 	// https://stackoverflow.com/a/54423725
@@ -52,7 +31,6 @@ func readKey() {
 		exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 		var b []byte = make([]byte, 5)
 		for {
-			println("Reading")
 			nRead, err := os.Stdin.Read(b)
 			if err != nil {
 				panic(err)
@@ -81,13 +59,6 @@ func readKey() {
 		}
 	}(ch)
 
-	// for {
-	// 	select {
-	// 	case stdin, _ := <-ch:
-	// 		fmt.Printf("Keys pressed: %v\n", stdin)
-	// 	}
-	// 	time.Sleep(time.Millisecond * 10)
-	// }
 	for {
 		select {
 		case stdin, _ := <-ch:
@@ -97,16 +68,27 @@ func readKey() {
 		}
 		time.Sleep(time.Millisecond * 10)
 	}
+}
 
-	// for {
-	// 	if len(ch) > 0 {
-	// 		b := <-ch
-	// 		fmt.Println(b)
-	// 	}
-	//
-	// 	time.Sleep(time.Millisecond * 10)
-	// }
+func draw() {
+	fmt.Print("\033[10;10H")
+	arena[3][5] = 1
+	for y, row := range arena {
+		var displayRow [10]byte
 
+		for x, cell := range row {
+			if cell == 0 {
+				displayRow[x] = ' '
+			} else {
+				displayRow[x] = 'X'
+			}
+		}
+
+		fmt.Println(string(displayRow[:]))
+		fmt.Print("\033[1B")
+		fmt.Printf("\033[%d;10H", 11+y)
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func main() {
