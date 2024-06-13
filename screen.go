@@ -21,8 +21,8 @@ func cursorXY(x int, y int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
-func draw(arena [20][10]byte, pos Pos) {
-	fmt.Printf("%+v", pos)
+func draw(arena [20][10]byte, player Player) {
+	fmt.Printf("%+v", player.pos)
 
 	cursorXY(10, 10)
 	for y, row := range arena {
@@ -36,9 +36,9 @@ func draw(arena [20][10]byte, pos Pos) {
 			}
 
 			// Block withing range
-			if x >= pos.x && x < pos.x+BlockSize &&
-				y >= pos.y && y < pos.y+BlockSize {
-				if b[y-pos.y][x-pos.x]|cell == 1 {
+			if x >= player.pos.x && x < player.pos.x+BlockSize &&
+				y >= player.pos.y && y < player.pos.y+BlockSize {
+				if player.block[y-player.pos.y][x-player.pos.x]|cell == 1 {
 					displayRow[x] = 'X'
 				}
 			}
