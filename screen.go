@@ -21,8 +21,17 @@ func cursorYX(y int, x int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
+func drawUI() {
+	for y := 0; y < ArenaHeight; y++ {
+		cursorYX(y+10, 9)
+		fmt.Print("|          |")
+	}
+	cursorYX(ArenaHeight+10, 9)
+	fmt.Print("------------")
+}
+
 func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
-	cursorYX(30, 10)
+	cursorYX(8, 10)
 	fmt.Printf("%+v", player.pos)
 
 	cursorYX(10, 10)
@@ -31,7 +40,7 @@ func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 
 		for x, cell := range row {
 			if cell == 0 {
-				displayRow[x] = '0'
+				displayRow[x] = ' '
 			} else {
 				displayRow[x] = 'X'
 			}
@@ -48,4 +57,5 @@ func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 		fmt.Println(string(displayRow[:]))
 		cursorYX(11+y, 10)
 	}
+	cursorYX(0, 0)
 }

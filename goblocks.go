@@ -150,6 +150,7 @@ func main() {
 	newBlock()
 
 	cls()
+	drawUI()
 	draw(arena, player)
 
 	ch := make(chan byte)
