@@ -121,7 +121,7 @@ func landBlock() {
 func handleKey(key byte) {
 	switch key {
 	case KeyUp:
-		tryMove(Pos{x: player.pos.x, y: player.pos.y - 1})
+		tryRotate()
 	case KeyDown:
 		tryMove(Pos{x: player.pos.x, y: player.pos.y + 1})
 	case KeyLeft:
@@ -129,7 +129,7 @@ func handleKey(key byte) {
 	case KeyRight:
 		tryMove(Pos{x: player.pos.x + 1, y: player.pos.y})
 	case KeySpace:
-		tryRotate()
+		// TODO: pull down
 	case KeyEscape:
 		os.Exit(0)
 	}
@@ -140,6 +140,7 @@ func gameLoop() {
 		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
 			landBlock()
 			newBlock()
+			draw(arena, player)
 		}
 		lastTick = time.Now().UnixMilli()
 	}
