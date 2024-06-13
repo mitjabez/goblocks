@@ -21,7 +21,7 @@ func cursorXY(x int, y int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
-func draw(arena [20][10]byte, player Player) {
+func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 	fmt.Printf("%+v", player.pos)
 
 	cursorXY(10, 10)

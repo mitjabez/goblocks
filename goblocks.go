@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"time"
 )
@@ -10,9 +9,9 @@ const ArenaWidth = 10
 const ArenaHeight = 20
 const BlockSize = 4
 
-type Block [4][4]byte
+type Block [BlockSize][BlockSize]byte
 
-var arena [20][10]byte
+var arena [ArenaHeight][ArenaWidth]byte
 var blockL = Block{
 	{1, 0, 0, 0},
 	{1, 0, 0, 0},
@@ -77,8 +76,6 @@ func handleKey(key byte) {
 }
 
 func main() {
-	//
-
 	lastTick = time.Now().UnixMilli()
 	player.block = blockL
 
@@ -88,7 +85,6 @@ func main() {
 	ch := make(chan byte)
 	go readKey(ch)
 
-	fmt.Println("app start")
 	for {
 		select {
 		case key, _ := <-ch:
