@@ -50,8 +50,8 @@ type Player struct {
 var lastTick int64
 var player Player
 
-func canMove(newPos Pos) bool {
-	for y, row := range player.block {
+func canMove(block Block, newPos Pos) bool {
+	for y, row := range block {
 		for x, cell := range row {
 			if cell == 0 {
 				continue
@@ -76,8 +76,23 @@ func canMove(newPos Pos) bool {
 	return true
 }
 
+func tryRotate() {
+	var newBlock Block
+
+	for y, row := range player.block {
+		for x, cell := range row {
+			newBlock[x][BlockSize-y-1] = cell
+		}
+	}
+
+	if canMove(newBlock, player.pos) {
+		player.block = newBlock
+		draw(arena, player)
+	}
+}
+
 func tryMove(newPos Pos) {
-	if canMove(newPos) {
+	if canMove(player.block, newPos) {
 		player.pos = newPos
 		draw(arena, player)
 	}
@@ -93,6 +108,8 @@ func handleKey(key byte) {
 		tryMove(Pos{x: player.pos.x - 1, y: player.pos.y})
 	case KeyRight:
 		tryMove(Pos{x: player.pos.x + 1, y: player.pos.y})
+	case KeySpace:
+		tryRotate()
 	case KeyEscape:
 		os.Exit(0)
 	}
