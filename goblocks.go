@@ -50,29 +50,59 @@ type Player struct {
 var lastTick int64
 var player Player
 
-func gameLoop() {
-	if time.Now().UnixMilli()-lastTick > 2000 {
-		player.pos.y = min(player.pos.y+1, ArenaHeight-1)
+func canMove(newPos Pos) bool {
+	for y, row := range player.block {
+		for x, cell := range row {
+			if cell == 0 {
+				continue
+			}
+
+			arenaY := newPos.y + y
+			arenaX := newPos.x + x
+
+			// Wall detection
+			if arenaX < 0 || arenaX >= ArenaWidth || arenaY < 0 || arenaY >= ArenaHeight {
+				return false
+			}
+
+			if newPos.y+y < ArenaHeight && newPos.x+x < ArenaWidth {
+				// Object hit detection
+				if arena[arenaY][arenaX] == 1 {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+func tryMove(newPos Pos) {
+	if canMove(newPos) {
+		player.pos = newPos
 		draw(arena, player)
-		lastTick = time.Now().UnixMilli()
 	}
 }
 
 func handleKey(key byte) {
 	switch key {
 	case KeyUp:
-		player.pos.y = max(player.pos.y-1, 0)
+		tryMove(Pos{x: player.pos.x, y: player.pos.y - 1})
 	case KeyDown:
-		player.pos.y = min(player.pos.y+1, ArenaHeight-1)
+		tryMove(Pos{x: player.pos.x, y: player.pos.y + 1})
 	case KeyLeft:
-		player.pos.x = max(player.pos.x-1, 0)
+		tryMove(Pos{x: player.pos.x - 1, y: player.pos.y})
 	case KeyRight:
-		player.pos.x = min(player.pos.x+1, ArenaWidth-1)
+		tryMove(Pos{x: player.pos.x + 1, y: player.pos.y})
 	case KeyEscape:
 		os.Exit(0)
 	}
+}
 
-	draw(arena, player)
+func gameLoop() {
+	if time.Now().UnixMilli()-lastTick > 2000 {
+		tryMove(Pos{x: player.pos.x, y: player.pos.y + 1})
+		lastTick = time.Now().UnixMilli()
+	}
 }
 
 func main() {

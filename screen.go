@@ -17,20 +17,21 @@ func cursorDown() {
 	csi("1B")
 }
 
-func cursorXY(x int, y int) {
+func cursorYX(y int, x int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
+	cursorYX(30, 10)
 	fmt.Printf("%+v", player.pos)
 
-	cursorXY(10, 10)
+	cursorYX(10, 10)
 	for y, row := range arena {
 		var displayRow [10]byte
 
 		for x, cell := range row {
 			if cell == 0 {
-				displayRow[x] = '.'
+				displayRow[x] = '0'
 			} else {
 				displayRow[x] = 'X'
 			}
@@ -45,6 +46,6 @@ func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 		}
 
 		fmt.Println(string(displayRow[:]))
-		cursorXY(10, 11+y)
+		cursorYX(11+y, 10)
 	}
 }
