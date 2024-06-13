@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"os"
 	"time"
 )
@@ -36,6 +37,7 @@ var blockO = Block{
 	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
+var allBlocks = []Block{blockL, blockT, blockI, blockO}
 
 type Pos struct {
 	x int
@@ -98,6 +100,12 @@ func tryMove(newPos Pos) {
 	}
 }
 
+func newBlock() {
+	player.block = allBlocks[rand.Intn(len(allBlocks))]
+	player.pos.x = ArenaWidth/2 - 1
+	player.pos.y = 0
+}
+
 func handleKey(key byte) {
 	switch key {
 	case KeyUp:
@@ -124,7 +132,7 @@ func gameLoop() {
 
 func main() {
 	lastTick = time.Now().UnixMilli()
-	player.block = blockL
+	newBlock()
 
 	cls()
 	draw(arena, player)
