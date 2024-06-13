@@ -8,12 +8,14 @@ import (
 
 const ArenaWidth = 10
 const ArenaHeight = 20
+const BlockSize = 4
 
 var arena [20][10]byte
-var b = [3][4]byte{
+var b = [4][4]byte{
 	{0, 1, 0, 0},
 	{0, 1, 0, 0},
 	{0, 1, 1, 0},
+	{0, 0, 0, 0},
 }
 
 type Pos struct {

@@ -23,8 +23,8 @@ func cursorXY(x int, y int) {
 
 func draw(arena [20][10]byte, pos Pos) {
 	fmt.Printf("%+v", pos)
+
 	cursorXY(10, 10)
-	arena[pos.y][pos.x] = 1
 	for y, row := range arena {
 		var displayRow [10]byte
 
@@ -33,6 +33,14 @@ func draw(arena [20][10]byte, pos Pos) {
 				displayRow[x] = '.'
 			} else {
 				displayRow[x] = 'X'
+			}
+
+			// Block withing range
+			if x >= pos.x && x < pos.x+BlockSize &&
+				y >= pos.y && y < pos.y+BlockSize {
+				if b[y-pos.y][x-pos.x]|cell == 1 {
+					displayRow[x] = 'X'
+				}
 			}
 		}
 
