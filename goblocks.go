@@ -38,19 +38,17 @@ func main() {
 
 	// draw()
 
-	// draw()
-	// https://stackoverflow.com/a/54423725
-	// ch := make(chan byte)
-	// readKey(ch)
+	ch := make(chan byte)
+	go readKey(ch)
 
 	fmt.Println("app start")
-	// for {
-	// 	select {
-	// 	case stdin, _ := <-ch:
-	// 		fmt.Println("Keys pressed:", stdin)
-	// 	default:
-	// 		fmt.Println("Working A ..")
-	// 	}
-	// 	time.Sleep(time.Millisecond * 10)
-	// }
+	for {
+		select {
+		case stdin, _ := <-ch:
+			fmt.Println("Keys pressed:", stdin)
+		default:
+			fmt.Println("Working A ..")
+		}
+		time.Sleep(time.Millisecond * 10)
+	}
 }
