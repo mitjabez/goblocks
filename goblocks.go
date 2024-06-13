@@ -93,17 +93,29 @@ func tryRotate() {
 	}
 }
 
-func tryMove(newPos Pos) {
+func tryMove(newPos Pos) bool {
 	if canMove(player.block, newPos) {
 		player.pos = newPos
 		draw(arena, player)
+		return true
 	}
+	return false
 }
 
 func newBlock() {
 	player.block = allBlocks[rand.Intn(len(allBlocks))]
 	player.pos.x = ArenaWidth/2 - 1
 	player.pos.y = 0
+}
+
+func landBlock() {
+	for y, row := range player.block {
+		for x, cell := range row {
+			if cell == 1 {
+				arena[player.pos.y+y][player.pos.x+x] = 1
+			}
+		}
+	}
 }
 
 func handleKey(key byte) {
@@ -125,7 +137,10 @@ func handleKey(key byte) {
 
 func gameLoop() {
 	if time.Now().UnixMilli()-lastTick > 2000 {
-		tryMove(Pos{x: player.pos.x, y: player.pos.y + 1})
+		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
+			landBlock()
+			newBlock()
+		}
 		lastTick = time.Now().UnixMilli()
 	}
 }
