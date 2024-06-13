@@ -21,9 +21,10 @@ func cursorXY(x int, y int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
-func draw() {
+func draw(arena [20][10]byte, pos Pos) {
+	fmt.Printf("%+v", pos)
 	cursorXY(10, 10)
-	arena[3][5] = 1
+	arena[pos.y][pos.x] = 1
 	for y, row := range arena {
 		var displayRow [10]byte
 

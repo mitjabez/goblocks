@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
+
+const ArenaWidth = 10
+const ArenaHeight = 20
 
 var arena [20][10]byte
 var b = [3][4]byte{
@@ -12,31 +16,46 @@ var b = [3][4]byte{
 	{0, 1, 1, 0},
 }
 
-func draw() {
-	fmt.Print("\033[10;10H")
-	arena[3][5] = 1
-	for y, row := range arena {
-		var displayRow [10]byte
+type Pos struct {
+	x int
+	y int
+}
 
-		for x, cell := range row {
-			if cell == 0 {
-				displayRow[x] = ' '
-			} else {
-				displayRow[x] = 'X'
-			}
-		}
+var pos Pos
+var lastTick int64
 
-		fmt.Println(string(displayRow[:]))
-		fmt.Print("\033[1B")
-		fmt.Printf("\033[%d;10H", 11+y)
-		time.Sleep(1 * time.Second)
+func gameLoop() {
+	if time.Now().UnixMilli()-lastTick > 2000 {
+		pos.y = min(pos.y+1, ArenaHeight-1)
+		draw(arena, pos)
+		lastTick = time.Now().UnixMilli()
 	}
 }
 
-func main() {
-	// fmt.Print("\033[2J")
+func handleKey(key byte) {
+	switch key {
+	case KeyUp:
+		pos.y = max(pos.y-1, 0)
+	case KeyDown:
+		pos.y = min(pos.y+1, ArenaHeight-1)
+	case KeyLeft:
+		pos.x = max(pos.x-1, 0)
+	case KeyRight:
+		pos.x = min(pos.x+1, ArenaWidth-1)
+	case KeyEscape:
+		os.Exit(0)
+	}
 
-	// draw()
+	draw(arena, pos)
+}
+
+func main() {
+	//
+
+	lastTick = time.Now().UnixMilli()
+
+	cls()
+	draw(arena, pos)
 
 	ch := make(chan byte)
 	go readKey(ch)
@@ -44,11 +63,11 @@ func main() {
 	fmt.Println("app start")
 	for {
 		select {
-		case stdin, _ := <-ch:
-			fmt.Println("Keys pressed:", stdin)
+		case key, _ := <-ch:
+			handleKey(key)
 		default:
-			fmt.Println("Working A ..")
 		}
+		gameLoop()
 		time.Sleep(time.Millisecond * 10)
 	}
 }
