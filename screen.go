@@ -3,16 +3,22 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type ArenaConfig struct {
-	posX int
-	posy int
+	posX             int
+	posy             int
+	arenaScaleWidth  int
+	arenaScaleHeight int
 }
 
 var arenaConfig = ArenaConfig{
 	posX: 5,
 	posy: 5,
+	// Font blocks are usually higher than wider. So let's just scale x2
+	arenaScaleWidth:  ArenaWidth * 2,
+	arenaScaleHeight: ArenaHeight,
 }
 
 // https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
@@ -40,14 +46,14 @@ func debug(msg string) {
 }
 
 func drawGameOver() {
-	y := arenaConfig.posy + ArenaHeight/3
-	x := arenaConfig.posX - 1
+	y := arenaConfig.posy + arenaConfig.arenaScaleHeight/3
+	x := arenaConfig.posX + 2
 	cursorYX(y, x)
-	fmt.Print("************")
+	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth-4))
 	cursorYX(y+1, x)
-	fmt.Print("*GAME OVER!*")
+	fmt.Print("*  GAME OVER!  *")
 	cursorYX(y+2, x)
-	fmt.Print("************")
+	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth-4))
 }
 
 func resetColor() {
@@ -64,17 +70,17 @@ func showCursor() {
 
 func drawUI() {
 	y := 0
-	for ; y < ArenaHeight; y++ {
+	for ; y < arenaConfig.arenaScaleHeight; y++ {
 		cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-		fmt.Print(".          .")
+		fmt.Print(".", strings.Repeat(" ", arenaConfig.arenaScaleWidth), ".")
 	}
 	cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-	fmt.Print("''''''''''''")
+	fmt.Print(strings.Repeat("'", arenaConfig.arenaScaleWidth+2))
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
-	y := arenaConfig.posy + ArenaHeight/3
-	x := arenaConfig.posX + ArenaWidth + 2
+	y := arenaConfig.posy + arenaConfig.arenaScaleHeight/3
+	x := arenaConfig.posX + arenaConfig.arenaScaleWidth + 2
 	cursorYX(y, x)
 	fmt.Printf("Level: %d", player.level)
 	cursorYX(y+1, x)
@@ -91,10 +97,11 @@ func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
 				}
 			}
 
-			rowBuffer += "\033[30;" + colors[cell.color] + "m \033[0m"
+			rowBuffer += "\033[30;" + colors[cell.color] + "m  \033[0m"
 		}
 
 		cursorYX(arenaConfig.posy+y, arenaConfig.posX)
+
 		fmt.Print(rowBuffer)
 	}
 }
