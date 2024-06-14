@@ -34,15 +34,15 @@ type Cell struct {
 
 var arena [ArenaHeight][ArenaWidth]Cell
 var blockL = Block{
-	{0, 0, 0, 0},
 	{0, 1, 0, 0},
 	{0, 1, 0, 0},
 	{0, 1, 1, 0},
+	{0, 0, 0, 0},
 }
 var blockT = Block{
-	{0, 0, 0, 0},
 	{0, 1, 0, 0},
 	{1, 1, 1, 0},
+	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
 var blockI = Block{
@@ -52,15 +52,15 @@ var blockI = Block{
 	{0, 0, 0, 0},
 }
 var blockO = Block{
+	{0, 1, 1, 0},
+	{0, 1, 1, 0},
 	{0, 0, 0, 0},
-	{0, 1, 1, 0},
-	{0, 1, 1, 0},
 	{0, 0, 0, 0},
 }
 var blockS = Block{
-	{0, 0, 0, 0},
 	{0, 1, 1, 0},
 	{1, 1, 0, 0},
+	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
 var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
@@ -146,7 +146,7 @@ func newBlock() bool {
 	player.block = allBlocks[rand.Intn(len(allBlocks))]
 	player.pos.x = ArenaWidth/2 - 1
 	// First row is empty
-	player.pos.y = -1
+	player.pos.y = 0
 	player.blockColor = newColor()
 
 	return canMove(player.block, player.pos)
