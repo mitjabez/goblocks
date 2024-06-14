@@ -30,6 +30,11 @@ func drawUI() {
 	fmt.Print("------------")
 }
 
+func debug(msg string) {
+	cursorYX(7, 10)
+	fmt.Print("[DEBUG] ", msg)
+}
+
 func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 	cursorYX(8, 10)
 	fmt.Printf("%+v", player.pos)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -109,11 +110,24 @@ func newBlock() {
 }
 
 func landBlock() {
-	for y, row := range player.block {
-		for x, cell := range row {
-			if cell == 1 {
-				arena[player.pos.y+y][player.pos.x+x] = 1
+	for y, row := range arena {
+		isFull := true
+		for x := range row {
+			if x >= player.pos.x && x < player.pos.x+BlockSize &&
+				y >= player.pos.y && y < player.pos.y+BlockSize {
+				blockCell := player.block[y-player.pos.y][x-player.pos.x]
+				if blockCell == 1 {
+					// Fill
+					arena[y][x] = 1
+				}
 			}
+
+			if arena[y][x] == 0 {
+				isFull = false
+			}
+		}
+
+		if isFull {
 		}
 	}
 }
