@@ -15,9 +15,24 @@ const (
 	GameOverState = iota
 )
 
+const (
+	Red     = iota
+	Green   = iota
+	Yellow  = iota
+	Blue    = iota
+	Magenta = iota
+	Cyan    = iota
+	White   = iota
+)
+
 type Block [BlockSize][BlockSize]byte
 
-var arena [ArenaHeight][ArenaWidth]byte
+type Cell struct {
+	isSet bool
+	color uint
+}
+
+var arena [ArenaHeight][ArenaWidth]Cell
 var blockL = Block{
 	{0, 0, 0, 0},
 	{0, 1, 0, 0},
@@ -57,14 +72,20 @@ type Pos struct {
 }
 
 type Player struct {
-	pos   Pos
-	block Block
-	score uint
-	level uint
+	pos        Pos
+	block      Block
+	blockColor uint
+	score      uint
+	level      uint
 }
 
 var lastTick int64
 var player Player
+
+func exit() {
+	showCursor()
+	os.Exit(0)
+}
 
 func canMove(block Block, newPos Pos) bool {
 	for y, row := range block {
@@ -83,7 +104,7 @@ func canMove(block Block, newPos Pos) bool {
 
 			if newPos.y+y < ArenaHeight && newPos.x+x < ArenaWidth {
 				// Object hit detection
-				if arena[arenaY][arenaX] == 1 {
+				if arena[arenaY][arenaX].isSet {
 					return false
 				}
 			}
@@ -126,6 +147,7 @@ func newBlock() bool {
 	player.pos.x = ArenaWidth/2 - 1
 	// First row is empty
 	player.pos.y = -1
+	player.blockColor = newColor()
 
 	return canMove(player.block, player.pos)
 }
@@ -134,9 +156,10 @@ func removeRow(rowToRemove int) {
 	for y := rowToRemove; y >= 0; y-- {
 		for x := range arena[y] {
 			if y > 0 {
-				arena[y][x] = arena[y-1][x]
+				arena[y][x].isSet = arena[y-1][x].isSet
+				arena[y][x].color = arena[y-1][x].color
 			} else {
-				arena[y][x] = 0
+				arena[y][x].isSet = false
 			}
 		}
 	}
@@ -154,11 +177,12 @@ func landBlock() {
 				blockCell := player.block[y-player.pos.y][x-player.pos.x]
 				if blockCell == 1 {
 					// Fill
-					arena[y][x] = 1
+					arena[y][x].isSet = true
+					arena[y][x].color = player.blockColor
 				}
 			}
 
-			if arena[y][x] == 0 {
+			if !arena[y][x].isSet {
 				isFullRow = false
 			}
 		}
@@ -182,7 +206,7 @@ func handleKey(key byte) {
 	case KeySpace:
 		// TODO: pull down
 	case KeyEscape:
-		os.Exit(0)
+		exit()
 	}
 }
 
@@ -191,7 +215,7 @@ func handleGameOverKey(key byte) {
 	case KeySpace:
 		newGame()
 	case KeyEscape:
-		os.Exit(0)
+		exit()
 	}
 }
 
@@ -211,10 +235,15 @@ func gameLoop() {
 	}
 }
 
+func newColor() uint {
+	return uint(rand.Intn(7-1) + 1)
+}
+
 func newGame() {
 	for y := range arena {
 		for x := range arena[y] {
-			arena[y][x] = 0
+			arena[y][x].isSet = false
+			arena[y][x].color = 0
 		}
 	}
 
@@ -223,8 +252,10 @@ func newGame() {
 	state = PlayingState
 	player.score = 0
 	player.level = 1
+	player.blockColor = newColor()
 
 	cls()
+	hideCursor()
 	drawUI()
 	draw(arena, player)
 

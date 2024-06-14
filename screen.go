@@ -2,9 +2,21 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 )
+
+type ArenaConfig struct {
+	posX int
+	posy int
+}
+
+var arenaConfig = ArenaConfig{
+	posX: 5,
+	posy: 5,
+}
+
+// https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
+var colors = []string{"40", "41", "42", "43", "44", "45", "46", "47"}
 
 func csi(sequence string) {
 	fmt.Print("\033[", sequence)
@@ -23,56 +35,66 @@ func cursorYX(y int, x int) {
 }
 
 func debug(msg string) {
-	cursorYX(7, 10)
+	cursorYX(1, arenaConfig.posX)
 	fmt.Print("[DEBUG] ", msg)
 }
 
-func drawUI() {
-	for y := 0; y < ArenaHeight; y++ {
-		cursorYX(y+10, 9)
-		fmt.Print("|          |")
-	}
-	cursorYX(ArenaHeight+10, 9)
-	fmt.Print("------------")
-}
-
 func drawGameOver() {
-	cursorYX(17, 9)
+	y := arenaConfig.posy + ArenaHeight/3
+	x := arenaConfig.posX - 1
+	cursorYX(y, x)
 	fmt.Print("************")
-	cursorYX(18, 9)
+	cursorYX(y+1, x)
 	fmt.Print("*GAME OVER!*")
-	cursorYX(19, 9)
+	cursorYX(y+2, x)
 	fmt.Print("************")
 }
 
-func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
-	cursorYX(20, 22)
+func resetColor() {
+	csi("0m")
+}
+
+func hideCursor() {
+	csi("?25l")
+}
+
+func showCursor() {
+	csi("?25h")
+}
+
+func drawUI() {
+	y := 0
+	for ; y < ArenaHeight; y++ {
+		cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
+		fmt.Print(".          .")
+	}
+	cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
+	fmt.Print("''''''''''''")
+}
+
+func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
+	y := arenaConfig.posy + ArenaHeight/3
+	x := arenaConfig.posX + ArenaWidth + 2
+	cursorYX(y, x)
 	fmt.Printf("Level: %d", player.level)
-	cursorYX(21, 22)
+	cursorYX(y+1, x)
 	fmt.Printf("Score: %d", player.score)
 
-	cursorYX(10, 10)
 	for y, row := range arena {
-		var displayRow [10]byte
-
+		rowBuffer := ""
 		for x, cell := range row {
-			if cell == 0 {
-				displayRow[x] = ' '
-			} else {
-				displayRow[x] = 'X'
-			}
-
 			// Block withing range
 			if x >= player.pos.x && x < player.pos.x+BlockSize &&
 				y >= player.pos.y && y < player.pos.y+BlockSize {
-				if player.block[y-player.pos.y][x-player.pos.x]|cell == 1 {
-					displayRow[x] = 'X'
+				if player.block[y-player.pos.y][x-player.pos.x] == 1 {
+					cell.color = player.blockColor
 				}
 			}
+
+			rowBuffer += "\033[30;" + colors[cell.color] + "m \033[0m"
 		}
 
-		os.Stdout.Write(displayRow[:])
-		cursorYX(11+y, 10)
+		cursorYX(arenaConfig.posy+y, arenaConfig.posX)
+		fmt.Print(rowBuffer)
 	}
-	cursorYX(0, 0)
 }
