@@ -14,20 +14,20 @@ type Block [BlockSize][BlockSize]byte
 
 var arena [ArenaHeight][ArenaWidth]byte
 var blockL = Block{
-	{1, 0, 0, 0},
-	{1, 0, 0, 0},
-	{1, 1, 0, 0},
 	{0, 0, 0, 0},
+	{0, 1, 0, 0},
+	{0, 1, 0, 0},
+	{0, 1, 1, 0},
 }
 var blockT = Block{
+	{0, 0, 0, 0},
 	{0, 1, 0, 0},
 	{1, 1, 1, 0},
 	{0, 0, 0, 0},
-	{0, 0, 0, 0},
 }
 var blockI = Block{
-	{1, 1, 1, 1},
 	{0, 0, 0, 0},
+	{1, 1, 1, 1},
 	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
@@ -38,9 +38,9 @@ var blockO = Block{
 	{0, 0, 0, 0},
 }
 var blockS = Block{
+	{0, 0, 0, 0},
 	{0, 1, 1, 0},
 	{1, 1, 0, 0},
-	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
 var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
@@ -111,7 +111,8 @@ func tryMove(newPos Pos) bool {
 func newBlock() {
 	player.block = allBlocks[rand.Intn(len(allBlocks))]
 	player.pos.x = ArenaWidth/2 - 1
-	player.pos.y = 0
+	// First row is empty
+	player.pos.y = -1
 }
 
 func removeRow(rowToRemove int) {
