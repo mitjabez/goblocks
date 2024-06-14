@@ -32,9 +32,9 @@ var blockI = Block{
 	{0, 0, 0, 0},
 }
 var blockO = Block{
-	{1, 1, 0, 0},
-	{1, 1, 0, 0},
 	{0, 0, 0, 0},
+	{0, 1, 1, 0},
+	{0, 1, 1, 0},
 	{0, 0, 0, 0},
 }
 var blockS = Block{
