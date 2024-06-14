@@ -162,7 +162,7 @@ func handleKey(key byte) {
 }
 
 func gameLoop() {
-	if time.Now().UnixMilli()-lastTick > 2000 {
+	if time.Now().UnixMilli()-lastTick > 1000 {
 		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
 			landBlock()
 			newBlock()
