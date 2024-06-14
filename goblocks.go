@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -109,9 +108,21 @@ func newBlock() {
 	player.pos.y = 0
 }
 
+func removeRow(rowToRemove int) {
+	for y := rowToRemove; y >= 0; y-- {
+		for x := range arena[y] {
+			if y > 0 {
+				arena[y][x] = arena[y-1][x]
+			} else {
+				arena[y][x] = 0
+			}
+		}
+	}
+}
+
 func landBlock() {
 	for y, row := range arena {
-		isFull := true
+		isFullRow := true
 		for x := range row {
 			if x >= player.pos.x && x < player.pos.x+BlockSize &&
 				y >= player.pos.y && y < player.pos.y+BlockSize {
@@ -123,11 +134,12 @@ func landBlock() {
 			}
 
 			if arena[y][x] == 0 {
-				isFull = false
+				isFullRow = false
 			}
 		}
 
-		if isFull {
+		if isFullRow {
+			removeRow(y)
 		}
 	}
 }
