@@ -59,6 +59,8 @@ type Pos struct {
 type Player struct {
 	pos   Pos
 	block Block
+	score uint
+	level uint
 }
 
 var lastTick int64
@@ -138,6 +140,9 @@ func removeRow(rowToRemove int) {
 			}
 		}
 	}
+
+	player.score += ArenaWidth
+	player.level = player.score/50 + 1
 }
 
 func landBlock() {
@@ -191,7 +196,8 @@ func handleGameOverKey(key byte) {
 }
 
 func gameLoop() {
-	if time.Now().UnixMilli()-lastTick > 1000 {
+	delay := int64(1000 - (player.level-1)*50)
+	if time.Now().UnixMilli()-lastTick > delay {
 		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
 			landBlock()
 			if !newBlock() {
@@ -214,12 +220,15 @@ func newGame() {
 
 	newBlock()
 
+	state = PlayingState
+	player.score = 0
+	player.level = 1
+
 	cls()
 	drawUI()
 	draw(arena, player)
 
 	lastTick = time.Now().UnixMilli()
-	state = PlayingState
 }
 
 func main() {

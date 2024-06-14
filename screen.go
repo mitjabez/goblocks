@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 )
 
@@ -45,6 +46,11 @@ func drawGameOver() {
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
+	cursorYX(20, 22)
+	fmt.Printf("Level: %d", player.level)
+	cursorYX(21, 22)
+	fmt.Printf("Score: %d", player.score)
+
 	cursorYX(10, 10)
 	for y, row := range arena {
 		var displayRow [10]byte
@@ -65,7 +71,7 @@ func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
 			}
 		}
 
-		fmt.Println(string(displayRow[:]))
+		os.Stdout.Write(displayRow[:])
 		cursorYX(11+y, 10)
 	}
 	cursorYX(0, 0)
