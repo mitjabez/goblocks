@@ -37,7 +37,13 @@ var blockO = Block{
 	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
-var allBlocks = []Block{blockL, blockT, blockI, blockO}
+var blockS = Block{
+	{0, 1, 1, 0},
+	{1, 1, 0, 0},
+	{0, 0, 0, 0},
+	{0, 0, 0, 0},
+}
+var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
 
 type Pos struct {
 	x int
