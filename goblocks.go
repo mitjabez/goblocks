@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -9,6 +10,10 @@ import (
 const ArenaWidth = 10
 const ArenaHeight = 20
 const BlockSize = 4
+const (
+	PlayingState  = iota
+	GameOverState = iota
+)
 
 type Block [BlockSize][BlockSize]byte
 
@@ -44,6 +49,7 @@ var blockS = Block{
 	{0, 0, 0, 0},
 }
 var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
+var state = PlayingState
 
 type Pos struct {
 	x int
@@ -108,11 +114,18 @@ func tryMove(newPos Pos) bool {
 	return false
 }
 
-func newBlock() {
+func gameOver() {
+	state = GameOverState
+	drawGameOver()
+}
+
+func newBlock() bool {
 	player.block = allBlocks[rand.Intn(len(allBlocks))]
 	player.pos.x = ArenaWidth/2 - 1
 	// First row is empty
 	player.pos.y = -1
+
+	return canMove(player.block, player.pos)
 }
 
 func removeRow(rowToRemove int) {
@@ -168,24 +181,49 @@ func handleKey(key byte) {
 	}
 }
 
+func handleGameOverKey(key byte) {
+	switch key {
+	case KeySpace:
+		newGame()
+	case KeyEscape:
+		os.Exit(0)
+	}
+}
+
 func gameLoop() {
 	if time.Now().UnixMilli()-lastTick > 1000 {
 		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
 			landBlock()
-			newBlock()
+			if !newBlock() {
+				gameOver()
+				return
+			}
+
 			draw(arena, player)
 		}
 		lastTick = time.Now().UnixMilli()
 	}
 }
 
-func main() {
-	lastTick = time.Now().UnixMilli()
+func newGame() {
+	for y := range arena {
+		for x := range arena[y] {
+			arena[y][x] = 0
+		}
+	}
+
 	newBlock()
 
 	cls()
 	drawUI()
 	draw(arena, player)
+
+	lastTick = time.Now().UnixMilli()
+	state = PlayingState
+}
+
+func main() {
+	newGame()
 
 	ch := make(chan byte)
 	go readKey(ch)
@@ -193,10 +231,20 @@ func main() {
 	for {
 		select {
 		case key, _ := <-ch:
-			handleKey(key)
+			if state == PlayingState {
+				handleKey(key)
+			} else if state == GameOverState {
+				handleGameOverKey(key)
+			} else {
+				panic(fmt.Sprint("Unknown state ", state))
+			}
 		default:
 		}
-		gameLoop()
+
+		if state == PlayingState {
+			gameLoop()
+		}
+
 		time.Sleep(time.Millisecond * 10)
 	}
 }

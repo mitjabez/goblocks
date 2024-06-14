@@ -21,6 +21,11 @@ func cursorYX(y int, x int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
+func debug(msg string) {
+	cursorYX(7, 10)
+	fmt.Print("[DEBUG] ", msg)
+}
+
 func drawUI() {
 	for y := 0; y < ArenaHeight; y++ {
 		cursorYX(y+10, 9)
@@ -30,15 +35,16 @@ func drawUI() {
 	fmt.Print("------------")
 }
 
-func debug(msg string) {
-	cursorYX(7, 10)
-	fmt.Print("[DEBUG] ", msg)
+func drawGameOver() {
+	cursorYX(17, 9)
+	fmt.Print("************")
+	cursorYX(18, 9)
+	fmt.Print("*GAME OVER!*")
+	cursorYX(19, 9)
+	fmt.Print("************")
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]byte, player Player) {
-	cursorYX(8, 10)
-	fmt.Printf("%+v", player.pos)
-
 	cursorYX(10, 10)
 	for y, row := range arena {
 		var displayRow [10]byte
