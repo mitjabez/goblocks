@@ -114,16 +114,16 @@ func canMove(block Block, newPos Pos) bool {
 }
 
 func tryRotate() {
-	var newBlock Block
+	var rotatedBlock Block
 
 	for y, row := range player.block {
 		for x, cell := range row {
-			newBlock[x][BlockSize-y-1] = cell
+			rotatedBlock[x][BlockSize-y-1] = cell
 		}
 	}
 
-	if canMove(newBlock, player.pos) {
-		player.block = newBlock
+	if canMove(rotatedBlock, player.pos) {
+		player.block = rotatedBlock
 		draw(arena, player)
 	}
 }
@@ -142,8 +142,29 @@ func gameOver() {
 	drawGameOver()
 }
 
+func generateBlock() Block {
+	block := allBlocks[rand.Intn(len(allBlocks))]
+	shouldFlip := lastTick%2 == 0
+
+	if !shouldFlip {
+		return block
+	}
+
+	var flippedBlock Block
+	for y := range block {
+		for x := 0; x < BlockSize/2; x++ {
+			flippedBlock[y][x] = block[y][BlockSize-x-1]
+			flippedBlock[y][BlockSize-x-1] = block[y][x]
+		}
+	}
+
+	return flippedBlock
+
+}
+
 func newBlock() bool {
-	player.block = allBlocks[rand.Intn(len(allBlocks))]
+	player.block = generateBlock()
+
 	player.pos.x = ArenaWidth/2 - 1
 	// First row is empty
 	player.pos.y = 0
