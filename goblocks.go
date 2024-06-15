@@ -186,7 +186,7 @@ func removeRow(rowToRemove int) {
 	}
 
 	player.score += ArenaWidth
-	player.level = player.score/50 + 1
+	player.level = player.score/30 + 1
 }
 
 func landBlock() {
@@ -241,7 +241,7 @@ func handleGameOverKey(key byte) {
 }
 
 func gameLoop() {
-	delay := int64(1000 - (player.level-1)*50)
+	delay := int64(1000 - (player.level-1)*70)
 	if time.Now().UnixMilli()-lastTick > delay {
 		if !tryMove(Pos{x: player.pos.x, y: player.pos.y + 1}) {
 			landBlock()
