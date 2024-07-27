@@ -68,6 +68,10 @@ func showCursor() {
 	csi("?25h")
 }
 
+func bold() {
+	csi("1m")
+}
+
 func drawUI() {
 	y := 0
 	for ; y < arenaConfig.arenaScaleHeight; y++ {
@@ -82,9 +86,11 @@ func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
 	y := arenaConfig.posy + arenaConfig.arenaScaleHeight/3
 	x := arenaConfig.posX + arenaConfig.arenaScaleWidth + 2
 	cursorYX(y, x)
+	bold()
 	fmt.Printf("Level: %d", player.level)
 	cursorYX(y+1, x)
 	fmt.Printf("Score: %d", player.score)
+	resetColor()
 
 	for y, row := range arena {
 		rowBuffer := ""
