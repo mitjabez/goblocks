@@ -63,8 +63,6 @@ var blockS = Block{
 	{0, 0, 0, 0},
 	{0, 0, 0, 0},
 }
-var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
-var state = PlayingState
 
 type Pos struct {
 	x int
@@ -79,6 +77,9 @@ type Player struct {
 	level      uint
 }
 
+var allBlocks = []Block{blockL, blockT, blockI, blockO, blockS}
+
+var state = PlayingState
 var lastTick int64
 var player Player
 
@@ -110,6 +111,7 @@ func canMove(block Block, newPos Pos) bool {
 			}
 		}
 	}
+
 	return true
 }
 
@@ -134,6 +136,7 @@ func tryMove(newPos Pos) bool {
 		draw(arena, player)
 		return true
 	}
+
 	return false
 }
 
@@ -159,13 +162,12 @@ func generateBlock() Block {
 	}
 
 	return flippedBlock
-
 }
 
 func newBlock() bool {
 	player.block = generateBlock()
 
-	player.pos.x = ArenaWidth/2 - 1
+	player.pos.x = ArenaWidth/2 - 2
 	// First row is empty
 	player.pos.y = 0
 	player.blockColor = newColor()
@@ -214,6 +216,22 @@ func landBlock() {
 	}
 }
 
+func handleGameOverKey(key byte) {
+	switch key {
+	case KeySpace:
+		newGame()
+	case KeyEscape:
+		exit()
+	}
+}
+
+func handleSpaceKey() {
+	// TODO: Handle block landing
+	if state == GameOverState {
+		newGame()
+	}
+}
+
 func handleKey(key byte) {
 	switch key {
 	case KeyUp:
@@ -225,16 +243,7 @@ func handleKey(key byte) {
 	case KeyRight:
 		tryMove(Pos{x: player.pos.x + 1, y: player.pos.y})
 	case KeySpace:
-		// TODO: pull down
-	case KeyEscape:
-		exit()
-	}
-}
-
-func handleGameOverKey(key byte) {
-	switch key {
-	case KeySpace:
-		newGame()
+		handleSpaceKey()
 	case KeyEscape:
 		exit()
 	}

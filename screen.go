@@ -40,22 +40,6 @@ func cursorYX(y int, x int) {
 	csi(strconv.Itoa(y) + ";" + strconv.Itoa(x) + "H")
 }
 
-func debug(msg string) {
-	cursorYX(1, arenaConfig.posX)
-	fmt.Print("[DEBUG] ", msg)
-}
-
-func drawGameOver() {
-	y := arenaConfig.posy + arenaConfig.arenaScaleHeight/3
-	x := arenaConfig.posX + 2
-	cursorYX(y, x)
-	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth-4))
-	cursorYX(y+1, x)
-	fmt.Print("*  GAME OVER!  *")
-	cursorYX(y+2, x)
-	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth-4))
-}
-
 func resetColor() {
 	csi("0m")
 }
@@ -72,14 +56,38 @@ func bold() {
 	csi("1m")
 }
 
+func debug(msg string) {
+	cursorYX(1, arenaConfig.posX)
+	fmt.Print("[DEBUG] ", msg)
+}
+
+func drawGameOver() {
+	y := arenaConfig.posy + arenaConfig.arenaScaleHeight/3
+	x := arenaConfig.posX
+	cursorYX(y, x)
+	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth))
+	cursorYX(y+1, x)
+	bold()
+	fmt.Print("     \033[30;31mGAME OVER      ")
+	resetColor()
+	cursorYX(y+2, x)
+	fmt.Print("                    ")
+	cursorYX(y+3, x)
+	fmt.Print("  SPACE: New Game   ")
+	cursorYX(y+4, x)
+	fmt.Print("  ESC:   Exit       ")
+	cursorYX(y+5, x)
+	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth))
+}
+
 func drawUI() {
 	y := 0
 	for ; y < arenaConfig.arenaScaleHeight; y++ {
 		cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-		fmt.Print("*", strings.Repeat(" ", arenaConfig.arenaScaleWidth), "*")
+		fmt.Print("|", strings.Repeat(" ", arenaConfig.arenaScaleWidth), "|")
 	}
 	cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth+2))
+	fmt.Print("|", strings.Repeat("=", arenaConfig.arenaScaleWidth), "|")
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
