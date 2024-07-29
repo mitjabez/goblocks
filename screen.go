@@ -84,10 +84,10 @@ func drawUI() {
 	y := 0
 	for ; y < arenaConfig.arenaScaleHeight; y++ {
 		cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-		fmt.Print("|", strings.Repeat(" ", arenaConfig.arenaScaleWidth), "|")
+		fmt.Print("*", strings.Repeat(" ", arenaConfig.arenaScaleWidth), "*")
 	}
 	cursorYX(arenaConfig.posy+y, arenaConfig.posX-1)
-	fmt.Print("|", strings.Repeat("=", arenaConfig.arenaScaleWidth), "|")
+	fmt.Print(strings.Repeat("*", arenaConfig.arenaScaleWidth+2))
 }
 
 func draw(arena [ArenaHeight][ArenaWidth]Cell, player Player) {
